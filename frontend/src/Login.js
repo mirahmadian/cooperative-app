@@ -8,11 +8,14 @@ function Login() {
   const [message, setMessage] = useState('');
   const [needPhone, setNeedPhone] = useState(false);
 
+  // آدرس بک‌اند روی Render
+  const backendUrl = 'https://cooperative-app.onrender.com';
+
   const sendCode = async () => {
     setMessage('');
     setNeedPhone(false);
     try {
-      const res = await axios.post('http://localhost:5000/api/auth/send-code', { national_code: nationalCode });
+      const res = await axios.post(`${backendUrl}/api/auth/send-code`, { national_code: nationalCode });
       if (res.data.need_phone) {
         setNeedPhone(true);
         setMessage(res.data.message);
@@ -28,7 +31,7 @@ function Login() {
   const verifyCode = async () => {
     setMessage('');
     try {
-      const res = await axios.post('http://localhost:5000/api/auth/verify-code', { national_code: nationalCode, code });
+      const res = await axios.post(`${backendUrl}/api/auth/verify-code`, { national_code: nationalCode, code });
       setMessage('ورود موفقیت‌آمیز بود!');
       // اینجا می‌توانی کاربر را به صفحه بعدی هدایت کنی یا اطلاعاتش را ذخیره کنی
     } catch (err) {
