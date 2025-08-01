@@ -12,20 +12,16 @@ app.use(express.json());
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
 
 // حافظه موقت برای نگهداری کدهای تایید
-const codes = {};
+global.codes = global.codes || {};
 
-// تابع ارسال پیام به بات بله
+// ارسال پیام به بات بله
 async function sendBaleMessage(user_id, text) {
-  const token = '1004378078:xtkieq2LxVCvzbAwUHjElG7dHosvq8U2twSdS6OW';
+  const token = 'توکن_بات_بله_خودت'; // توکن واقعی بات بله را اینجا قرار بده
   const url = `https://tapi.bale.ai/bot${token}/sendMessage`;
-  try {
-    await axios.post(url, {
-      chat_id: user_id,
-      text: text
-    });
-  } catch (err) {
-    console.log('خطا در ارسال پیام به بله:', err.message);
-  }
+  await axios.post(url, {
+    chat_id: user_id,
+    text: text
+  });
 }
 
 // تست اتصال به سرور و Supabase
@@ -57,7 +53,8 @@ app.post('/api/auth/send-code', async (req, res) => {
 
   // اگر شماره موبایل یا bale_user_id ثبت نشده بود
   if (!user.phone || !user.bale_user_id) {
-    const botLink = 'https://ble.ir/TavoniBot';
+    // ساخت لینک استارت بات بله با کدملی
+    const botLink = `https://ble.ir/TavoniBot?start=${national_code}`;
     return res.json({
       need_phone: true,
       message: `برای دریافت کد تایید، لطفاً <a href="${botLink}" target="_blank">اینجا</a> کلیک کنید و شماره موبایل خود را با بات به اشتراک بگذارید.`
@@ -66,9 +63,15 @@ app.post('/api/auth/send-code', async (req, res) => {
 
   // اگر شماره موبایل و bale_user_id وجود داشت، کد تایید را بفرست
   const code = Math.floor(100000 + Math.random() * 900000).toString();
-  codes[national_code] = code;
+  global.codes[national_code] = code;
 
-  await sendBaleMessage(user.bale_user_id, `کد تایید شما: ${code}`);
+  // ارسال کد تایید به بله
+  try {
+    await sendBaleMessage(user.bale_user_id, `کد تایید شما: ${code}`);
+  } catch (err) {
+    console.log('خطا در ارسال پیام به بله:', err.message, err.response?.data);
+    return res.status(500).json({ message: 'خطا در ارسال پیام به بله' });
+  }
 
   res.json({ message: 'کد تایید ارسال شد' });
 });
@@ -78,7 +81,7 @@ app.post('/api/auth/verify-code', async (req, res) => {
   const { national_code, code } = req.body;
   if (!national_code || !code) return res.status(400).json({ message: 'کدملی و کد تایید الزامی است' });
 
-  if (codes[national_code] !== code) return res.status(400).json({ message: 'کد تایید اشتباه است' });
+  if (global.codes[national_code] !== code) return res.status(400).json({ message: 'کد تایید اشتباه است' });
 
   // دریافت اطلاعات کاربر
   const { data: user, error } = await supabase
@@ -90,9 +93,26 @@ app.post('/api/auth/verify-code', async (req, res) => {
   if (!user) return res.status(404).json({ message: 'کاربر یافت نشد' });
 
   // حذف کد تایید از حافظه
-  delete codes[national_code];
+  delete global.codes[national_code];
 
   res.json({ user });
+});
+
+// آپدیت پروفایل کاربر
+app.post('/api/user/update-profile', async (req, res) => {
+  const { national_code, address, postal_code } = req.body;
+  if (!national_code || !address || !postal_code)
+    return res.status(400).json({ message: 'همه فیلدها الزامی است' });
+
+  const { data, error } = await supabase
+    .from('users')
+    .update({ address, postal_code })
+    .eq('national_code', national_code)
+    .select()
+    .single();
+
+  if (error) return res.status(500).json({ message: error.message });
+  res.json({ user: data });
 });
 
 // صفحه اصلی
