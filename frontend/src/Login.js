@@ -7,12 +7,14 @@ function Login() {
   const [code, setCode] = useState('');
   const [message, setMessage] = useState('');
   const [needPhone, setNeedPhone] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const backendUrl = 'https://cooperative-app.onrender.com';
 
   const sendCode = async () => {
     setMessage('');
     setNeedPhone(false);
+    setLoading(true);
     try {
       const res = await axios.post(`${backendUrl}/api/auth/send-code`, { national_code: nationalCode });
       if (res.data.need_phone) {
@@ -25,10 +27,12 @@ function Login() {
     } catch (err) {
       setMessage(err.response?.data?.message || 'خطا در ارسال کد تایید');
     }
+    setLoading(false);
   };
 
   const verifyCode = async () => {
     setMessage('');
+    setLoading(true);
     try {
       const res = await axios.post(`${backendUrl}/api/auth/verify-code`, { national_code: nationalCode, code });
       setMessage('ورود موفقیت‌آمیز بود!');
@@ -36,6 +40,7 @@ function Login() {
     } catch (err) {
       setMessage(err.response?.data?.message || 'خطا در ورود');
     }
+    setLoading(false);
   };
 
   return (
@@ -65,6 +70,7 @@ function Login() {
               borderRadius: 6,
               border: '1px solid #ccc'
             }}
+            disabled={loading}
           />
           <button
             onClick={sendCode}
@@ -77,10 +83,16 @@ function Login() {
               borderRadius: 6,
               fontWeight: 'bold'
             }}
+            disabled={loading}
           >
-            دریافت کد تایید
+            {loading ? (
+              <span>
+                <span role="img" aria-label="loading">⏳</span> لطفاً صبر کنید...
+              </span>
+            ) : (
+              'دریافت کد تایید'
+            )}
           </button>
-          {/* فقط اگر needPhone فعال بود، پیام را نمایش بده */}
           {needPhone && message && (
             <div
               style={{
@@ -91,7 +103,6 @@ function Login() {
               dangerouslySetInnerHTML={{ __html: message }}
             />
           )}
-          {/* اگر پیام دیگری بود و needPhone فعال نبود، نمایش بده */}
           {!needPhone && message && (
             <div
               style={{
@@ -118,6 +129,7 @@ function Login() {
               borderRadius: 6,
               border: '1px solid #ccc'
             }}
+            disabled={loading}
           />
           <button
             onClick={verifyCode}
@@ -130,8 +142,15 @@ function Login() {
               borderRadius: 6,
               fontWeight: 'bold'
             }}
+            disabled={loading}
           >
-            ورود
+            {loading ? (
+              <span>
+                <span role="img" aria-label="loading">⏳</span> لطفاً صبر کنید...
+              </span>
+            ) : (
+              'ورود'
+            )}
           </button>
           {message && (
             <div
