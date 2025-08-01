@@ -16,7 +16,8 @@ global.codes = global.codes || {};
 
 // ارسال پیام به بات بله
 async function sendBaleMessage(user_id, text) {
-  const token = 'توکن_بات_بله_خودت'; // توکن واقعی بات بله را اینجا قرار بده
+  // توکن بات بله را دقیقاً همینجا قرار بده (بدون فاصله اضافی)
+  const token = '1004378078:xtkieq2LxVCvzbAwUHjElG7dHosvq8U2twSdS6OW';
   const url = `https://tapi.bale.ai/bot${token}/sendMessage`;
   await axios.post(url, {
     chat_id: user_id,
@@ -53,7 +54,6 @@ app.post('/api/auth/send-code', async (req, res) => {
 
   // اگر شماره موبایل یا bale_user_id ثبت نشده بود
   if (!user.phone || !user.bale_user_id) {
-    // ساخت لینک استارت بات بله با کدملی
     const botLink = `https://ble.ir/TavoniBot?start=${national_code}`;
     return res.json({
       need_phone: true,
