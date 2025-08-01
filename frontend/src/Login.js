@@ -8,7 +8,6 @@ function Login() {
   const [message, setMessage] = useState('');
   const [needPhone, setNeedPhone] = useState(false);
 
-  // آدرس بک‌اند روی Render
   const backendUrl = 'https://cooperative-app.onrender.com';
 
   const sendCode = async () => {
@@ -40,23 +39,21 @@ function Login() {
   };
 
   return (
-    <div
-      style={{
-        maxWidth: 400,
-        margin: '80px auto',
-        padding: 24,
-        border: '1px solid #eee',
-        borderRadius: 12,
-        boxShadow: '0 2px 8px #eee',
-        background: '#fff',
-        fontFamily: "'Vazir', Tahoma, Arial, sans-serif",
-        direction: 'rtl'
-      }}
-    >
-      <h2 style={{ textAlign: 'center', fontFamily: "'Vazir', Tahoma, Arial, sans-serif" }}>ورود به سامانه تعاونی</h2>
+    <div style={{
+      maxWidth: 400,
+      margin: '80px auto',
+      padding: 24,
+      border: '1px solid #eee',
+      borderRadius: 12,
+      boxShadow: '0 2px 8px #eee',
+      background: '#fff',
+      fontFamily: "'Vazir', Tahoma, Arial, sans-serif",
+      direction: 'rtl'
+    }}>
+      <h2 style={{ textAlign: 'center' }}>ورود به سامانه تعاونی</h2>
       {step === 1 && (
         <>
-          <label style={{ fontFamily: "'Vazir', Tahoma, Arial, sans-serif" }}>کدملی:</label>
+          <label>کدملی:</label>
           <input
             type="text"
             value={nationalCode}
@@ -66,8 +63,7 @@ function Login() {
               padding: 8,
               margin: '8px 0',
               borderRadius: 6,
-              border: '1px solid #ccc',
-              fontFamily: "'Vazir', Tahoma, Arial, sans-serif"
+              border: '1px solid #ccc'
             }}
           />
           <button
@@ -79,28 +75,38 @@ function Login() {
               color: '#fff',
               border: 'none',
               borderRadius: 6,
-              fontWeight: 'bold',
-              fontFamily: "'Vazir', Tahoma, Arial, sans-serif"
+              fontWeight: 'bold'
             }}
           >
             دریافت کد تایید
           </button>
+          {/* فقط اگر needPhone فعال بود، پیام را نمایش بده */}
+          {needPhone && message && (
+            <div
+              style={{
+                marginTop: 16,
+                color: '#d32f2f',
+                textAlign: 'center'
+              }}
+              dangerouslySetInnerHTML={{ __html: message }}
+            />
+          )}
+          {/* اگر پیام دیگری بود و needPhone فعال نبود، نمایش بده */}
+          {!needPhone && message && (
+            <div
+              style={{
+                marginTop: 16,
+                color: '#d32f2f',
+                textAlign: 'center'
+              }}
+              dangerouslySetInnerHTML={{ __html: message }}
+            />
+          )}
         </>
-      )}
-      {needPhone && (
-        <div
-          style={{
-            marginTop: 16,
-            color: '#d32f2f',
-            textAlign: 'center',
-            fontFamily: "'Vazir', Tahoma, Arial, sans-serif"
-          }}
-          dangerouslySetInnerHTML={{ __html: message }}
-        />
       )}
       {step === 2 && (
         <>
-          <label style={{ fontFamily: "'Vazir', Tahoma, Arial, sans-serif" }}>کد تایید:</label>
+          <label>کد تایید:</label>
           <input
             type="text"
             value={code}
@@ -110,8 +116,7 @@ function Login() {
               padding: 8,
               margin: '8px 0',
               borderRadius: 6,
-              border: '1px solid #ccc',
-              fontFamily: "'Vazir', Tahoma, Arial, sans-serif"
+              border: '1px solid #ccc'
             }}
           />
           <button
@@ -123,24 +128,22 @@ function Login() {
               color: '#fff',
               border: 'none',
               borderRadius: 6,
-              fontWeight: 'bold',
-              fontFamily: "'Vazir', Tahoma, Arial, sans-serif"
+              fontWeight: 'bold'
             }}
           >
             ورود
           </button>
+          {message && (
+            <div
+              style={{
+                marginTop: 16,
+                color: '#388e3c',
+                textAlign: 'center'
+              }}
+              dangerouslySetInnerHTML={{ __html: message }}
+            />
+          )}
         </>
-      )}
-      {message && (
-        <div
-          style={{
-            marginTop: 16,
-            color: step === 2 ? '#388e3c' : '#d32f2f',
-            textAlign: 'center',
-            fontFamily: "'Vazir', Tahoma, Arial, sans-serif"
-          }}
-          dangerouslySetInnerHTML={{ __html: message }}
-        />
       )}
     </div>
   );
