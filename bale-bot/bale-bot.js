@@ -15,7 +15,6 @@ const BALE_API = `https://tapi.bale.ai/bot${BALE_TOKEN}`;
 const app = express();
 app.use(bodyParser.json());
 
-// هندل پیام‌های دریافتی از بله
 app.post(`/webhook/${BALE_TOKEN}`, async (req, res) => {
   const update = req.body;
 
@@ -31,27 +30,52 @@ app.post(`/webhook/${BALE_TOKEN}`, async (req, res) => {
       let national_code = '';
       if (parts.length > 1) national_code = parts[1];
 
-      // درخواست شماره موبایل با دکمه مخصوص
-      await axios.post(`${BALE_API}/sendMessage`, {
-        chat_id,
-        text: `سلام! لطفاً شماره موبایل خود را با دکمه زیر ارسال کنید.`,
-        reply_markup: {
-          keyboard: [
-            [
-              {
-                text: 'ارسال شماره موبایل',
-                request_contact: true
-              }
-            ]
-          ],
-          resize_keyboard: true,
-          one_time_keyboard: true
-        }
-      });
+      // چک کن که شماره موبایل قبلاً ثبت شده یا نه
+      let user = null;
+      if (national_code) {
+        const { data } = await supabase
+          .from('users')
+          .select('*')
+          .eq('national_code', national_code)
+          .single();
+        user = data;
+      }
 
-      // کدملی را موقتاً در حافظه نگه می‌داریم
-      global.nationalCodes = global.nationalCodes || {};
-      global.nationalCodes[chat_id] = national_code;
+      if (user && user.phone) {
+        // اگر شماره موبایل قبلاً ثبت شده بود
+        await axios.post(`${BALE_API}/sendMessage`, {
+          chat_id,
+          text: 'شماره موبایل شما قبلاً ثبت شده است. برای دریافت کد تایید به سایت مراجعه کنید.',
+          reply_markup: { remove_keyboard: true }
+        });
+      } else if (user) {
+        // اگر شماره موبایل ثبت نشده بود
+        await axios.post(`${BALE_API}/sendMessage`, {
+          chat_id,
+          text: 'لطفاً شماره موبایل خود را با دکمه زیر ارسال کنید.',
+          reply_markup: {
+            keyboard: [
+              [
+                {
+                  text: 'ارسال شماره موبایل',
+                  request_contact: true
+                }
+              ]
+            ],
+            resize_keyboard: true,
+            one_time_keyboard: true
+          }
+        });
+        // کدملی را در حافظه نگه دار
+        global.nationalCodes = global.nationalCodes || {};
+        global.nationalCodes[chat_id] = national_code;
+      } else {
+        await axios.post(`${BALE_API}/sendMessage`, {
+          chat_id,
+          text: 'کدملی شما شناسایی نشد. لطفاً دوباره از سایت اقدام کنید.',
+          reply_markup: { remove_keyboard: true }
+        });
+      }
     }
   }
 
@@ -59,11 +83,8 @@ app.post(`/webhook/${BALE_TOKEN}`, async (req, res) => {
   if (update.message && update.message.contact) {
     const chat_id = update.message.chat.id;
     const phone = update.message.contact.phone_number;
-
-    // کدملی را از حافظه بخوان
     const national_code = global.nationalCodes ? global.nationalCodes[chat_id] : '';
 
-    // ذخیره شماره موبایل و chat_id در Supabase
     if (national_code) {
       const { data, error } = await supabase
         .from('users')
