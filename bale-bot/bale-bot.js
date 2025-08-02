@@ -74,18 +74,21 @@ app.post(`/webhook/${BALE_TOKEN}`, async (req, res) => {
       if (error) {
         await axios.post(`${BALE_API}/sendMessage`, {
           chat_id,
-          text: 'خطا در ذخیره شماره موبایل. لطفاً دوباره تلاش کنید.'
+          text: 'خطا در ذخیره شماره موبایل. لطفاً دوباره تلاش کنید.',
+          reply_markup: { remove_keyboard: true }
         });
       } else {
         await axios.post(`${BALE_API}/sendMessage`, {
           chat_id,
-          text: 'شماره موبایل شما با موفقیت ثبت شد! حالا می‌توانید به سایت مراجعه و کد تایید را دریافت کنید.'
+          text: 'شماره موبایل شما با موفقیت ثبت شد! حالا می‌توانید به سایت مراجعه و کد تایید را دریافت کنید.',
+          reply_markup: { remove_keyboard: true }
         });
       }
     } else {
       await axios.post(`${BALE_API}/sendMessage`, {
         chat_id,
-        text: 'کدملی شما شناسایی نشد. لطفاً دوباره از سایت اقدام کنید.'
+        text: 'کدملی شما شناسایی نشد. لطفاً دوباره از سایت اقدام کنید.',
+        reply_markup: { remove_keyboard: true }
       });
     }
   }

@@ -43,6 +43,45 @@ function Login({ onLogin }) {
     setLoading(false);
   };
 
+  // باکس کد تایید با ۵ رقم و راهنما
+  const renderCodeInputs = () => (
+    <div style={{
+      display: 'flex',
+      justifyContent: 'space-between',
+      marginBottom: 16
+    }}>
+      {[0,1,2,3,4].map(i => (
+        <input
+          key={i}
+          type="text"
+          maxLength={1}
+          value={code[i] || ''}
+          onChange={e => {
+            let val = e.target.value.replace(/[^0-9]/g, '');
+            let newCode = code.split('');
+            newCode[i] = val;
+            setCode(newCode.join('').slice(0,5));
+            // فوکوس اتوماتیک به بعدی
+            if (val && i < 4) {
+              document.getElementById(`code-input-${i+1}`)?.focus();
+            }
+          }}
+          id={`code-input-${i}`}
+          style={{
+            width: 40,
+            height: 40,
+            fontSize: 24,
+            textAlign: 'center',
+            border: '1px solid #ccc',
+            borderRadius: 8,
+            margin: '0 4px'
+          }}
+          disabled={loading}
+        />
+      ))}
+    </div>
+  );
+
   return (
     <div style={{
       maxWidth: 400,
@@ -58,7 +97,7 @@ function Login({ onLogin }) {
       <h2 style={{ textAlign: 'center' }}>ورود به سامانه تعاونی</h2>
       {step === 1 && (
         <>
-          <label>کدملی:</label>
+          <label style={{ display: 'block', marginBottom: 8 }}>کدملی خود را وارد نمایید:</label>
           <input
             type="text"
             value={nationalCode}
@@ -117,20 +156,8 @@ function Login({ onLogin }) {
       )}
       {step === 2 && (
         <>
-          <label>کد تایید:</label>
-          <input
-            type="text"
-            value={code}
-            onChange={e => setCode(e.target.value)}
-            style={{
-              width: '100%',
-              padding: 8,
-              margin: '8px 0',
-              borderRadius: 6,
-              border: '1px solid #ccc'
-            }}
-            disabled={loading}
-          />
+          <label style={{ display: 'block', marginBottom: 8 }}>کد تایید را وارد نمایید:</label>
+          {renderCodeInputs()}
           <button
             onClick={verifyCode}
             style={{
@@ -142,7 +169,7 @@ function Login({ onLogin }) {
               borderRadius: 6,
               fontWeight: 'bold'
             }}
-            disabled={loading}
+            disabled={loading || code.length !== 5}
           >
             {loading ? (
               <span>
