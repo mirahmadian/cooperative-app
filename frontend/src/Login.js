@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 
-function Login() {
+function Login({ onLogin }) {
   const [nationalCode, setNationalCode] = useState('');
   const [step, setStep] = useState(1);
   const [code, setCode] = useState('');
@@ -36,7 +36,7 @@ function Login() {
     try {
       const res = await axios.post(`${backendUrl}/api/auth/verify-code`, { national_code: nationalCode, code });
       setMessage('ورود موفقیت‌آمیز بود!');
-      // اینجا می‌توانی کاربر را به صفحه بعدی هدایت کنی یا اطلاعاتش را ذخیره کنی
+      if (onLogin) onLogin(res.data.user);
     } catch (err) {
       setMessage(err.response?.data?.message || 'خطا در ورود');
     }
