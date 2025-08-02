@@ -1,5 +1,4 @@
-body, * {
+body {
+  background: #f7f7f7 !important;
   font-family: 'Vazir', Tahoma, Arial, sans-serif !important;
-  direction: rtl;
-  box-sizing: border-box;
 }

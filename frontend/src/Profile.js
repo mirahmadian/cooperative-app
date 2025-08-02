@@ -10,63 +10,69 @@ function Profile({ user, onSave }) {
       setMessage('لطفاً همه فیلدها را پر کنید.');
       return;
     }
-    // اینجا می‌توانی اطلاعات را به سرور ارسال کنی (در مراحل بعدی)
     setMessage('اطلاعات با موفقیت ذخیره شد!');
     if (onSave) onSave({ address, postal_code: postalCode });
   };
 
   return (
     <div style={{
-      maxWidth: 400,
-      margin: '80px auto',
-      padding: 24,
-      border: '1px solid #eee',
-      borderRadius: 12,
-      boxShadow: '0 2px 8px #eee',
-      background: '#fff',
+      maxWidth: 420,
+      margin: '60px auto',
+      padding: 32,
+      borderRadius: 18,
+      background: '#e8f5e9',
+      boxShadow: '0 4px 24px #1b3c1a22',
       fontFamily: "'Vazir', Tahoma, Arial, sans-serif",
-      direction: 'rtl'
+      direction: 'rtl',
+      border: '2px solid #1b3c1a'
     }}>
-      <h2 style={{ textAlign: 'center' }}>پروفایل کاربر</h2>
-      <div style={{ marginBottom: 12 }}>
-        <b>نام:</b> {user.name}
+      <div style={{ textAlign: 'center', marginBottom: 16 }}>
+        <img src="https://i.ibb.co/6b6n6n6/logo-tavoni.png" alt="لوگو" style={{ width: 64, marginBottom: 8 }} />
+        <h2 style={{ color: '#1b3c1a', margin: 0, fontWeight: 'bold', fontSize: 26 }}>مشخصات کاربر</h2>
       </div>
-      <div style={{ marginBottom: 12 }}>
-        <b>نام خانوادگی:</b> {user.family}
+      <div style={{ marginBottom: 14, color: '#1b3c1a', fontWeight: 'bold' }}>
+        <span>نام:</span> <span style={{ fontWeight: 'normal' }}>{user.name}</span>
       </div>
-      <div style={{ marginBottom: 12 }}>
-        <b>کدملی:</b> {user.national_code}
+      <div style={{ marginBottom: 14, color: '#1b3c1a', fontWeight: 'bold' }}>
+        <span>نام خانوادگی:</span> <span style={{ fontWeight: 'normal' }}>{user.family}</span>
       </div>
-      <div style={{ marginBottom: 12 }}>
-        <b>شماره موبایل:</b> {user.phone}
+      <div style={{ marginBottom: 14, color: '#1b3c1a', fontWeight: 'bold' }}>
+        <span>کدملی:</span> <span style={{ fontWeight: 'normal' }}>{user.national_code}</span>
       </div>
-      <div style={{ marginBottom: 12 }}>
-        <label>آدرس:</label>
+      <div style={{ marginBottom: 14, color: '#1b3c1a', fontWeight: 'bold' }}>
+        <span>شماره موبایل:</span> <span style={{ fontWeight: 'normal' }}>{user.phone}</span>
+      </div>
+      <div style={{ marginBottom: 14 }}>
+        <label style={{ color: '#1b3c1a', fontWeight: 'bold' }}>آدرس:</label>
         <input
           type="text"
           value={address}
           onChange={e => setAddress(e.target.value)}
           style={{
             width: '100%',
-            padding: 8,
+            padding: 10,
             margin: '8px 0',
-            borderRadius: 6,
-            border: '1px solid #ccc'
+            borderRadius: 8,
+            border: '1.5px solid #4caf50',
+            background: '#fff',
+            fontFamily: "'Vazir', Tahoma, Arial, sans-serif"
           }}
         />
       </div>
-      <div style={{ marginBottom: 12 }}>
-        <label>کدپستی:</label>
+      <div style={{ marginBottom: 18 }}>
+        <label style={{ color: '#1b3c1a', fontWeight: 'bold' }}>کدپستی:</label>
         <input
           type="text"
           value={postalCode}
           onChange={e => setPostalCode(e.target.value)}
           style={{
             width: '100%',
-            padding: 8,
+            padding: 10,
             margin: '8px 0',
-            borderRadius: 6,
-            border: '1px solid #ccc'
+            borderRadius: 8,
+            border: '1.5px solid #4caf50',
+            background: '#fff',
+            fontFamily: "'Vazir', Tahoma, Arial, sans-serif"
           }}
         />
       </div>
@@ -74,21 +80,25 @@ function Profile({ user, onSave }) {
         onClick={handleSave}
         style={{
           width: '100%',
-          padding: 10,
-          background: '#1976d2',
-          color: '#fff',
+          padding: 12,
+          background: '#ffd700',
+          color: '#1b3c1a',
           border: 'none',
-          borderRadius: 6,
-          fontWeight: 'bold'
+          borderRadius: 8,
+          fontWeight: 'bold',
+          fontSize: 18,
+          boxShadow: '0 2px 8px #4caf5044',
+          transition: 'background 0.2s'
         }}
       >
         ذخیره اطلاعات
       </button>
       {message && (
         <div style={{
-          marginTop: 16,
+          marginTop: 18,
           color: '#388e3c',
-          textAlign: 'center'
+          textAlign: 'center',
+          fontWeight: 'bold'
         }}>
           {message}
         </div>
